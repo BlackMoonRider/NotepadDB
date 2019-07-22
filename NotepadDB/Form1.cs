@@ -15,6 +15,7 @@ namespace NotepadDB
 {
     public partial class Form_NotepadDB : Form
     {
+        private string currentFilename;
         private string currentExtension;
 
         public Form_NotepadDB()
@@ -28,6 +29,7 @@ namespace NotepadDB
             
             if (dialogResult == DialogResult.OK)
             {
+                currentFilename = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
                 currentExtension = Path.GetExtension(openFileDialog.FileName);
                 OpenFile(openFileDialog.FileName);
             }
@@ -58,9 +60,21 @@ namespace NotepadDB
         {
             using (DocumentContext documentContext = new DocumentContext())
             {
+                if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
+                {
+                    DialogResult dialogResult =
+                        MessageBox.Show(
+                            "The file with the same name has already been added to a database. Do you want to overwrite it?",
+                            "Record exists",
+                            MessageBoxButtons.YesNo);
+
+                    if (dialogResult == DialogResult.No)
+                        return;
+                }
+
                 Document document = new Document()
                 {
-                    Name = "test",
+                    Name = currentFilename,
                     Extension = currentExtension,
                     Contents = textBox.Text
                 };
@@ -74,7 +88,7 @@ namespace NotepadDB
         {
             using (DocumentContext documentContext = new DocumentContext())
             {
-                var documents = documentContext.Documents.Where(d => d.Name == "test" && d.Extension == currentExtension).Select(d => d.Contents).ToList();
+                var documents = documentContext.Documents.Where(d => d.Name == currentFilename && d.Extension == currentExtension).Select(d => d.Contents).ToList();
                 if (documents.Count > 0)
                     textBox.Text = documents[0];
             }
