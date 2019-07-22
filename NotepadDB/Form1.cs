@@ -71,6 +71,7 @@ namespace NotepadDB
                 textBox_FileName.Text = currentFilename;
 
                 OpenFile(openFileDialog.FileName);
+                UpdateStatusLabel("File opened.");
             }
 
             void OpenFile(string fileName)
@@ -104,8 +105,10 @@ namespace NotepadDB
                     Contents = textBox.Text
                 };
 
+                UpdateStatusLabel("Saving file to DB...");
                 documentContext.Documents.AddOrUpdate(document);
                 documentContext.SaveChanges();
+                UpdateStatusLabel("File saved to DB.");
             }
         }
 
@@ -122,9 +125,21 @@ namespace NotepadDB
                 UpdateFileNameInput();
                 UpdateExtension();
 
-                var documents = documentContext.Documents.Where(d => d.Name == currentFilename && d.Extension == currentExtension).Select(d => d.Contents).ToList();
+                UpdateStatusLabel("Opening file from DB...");
+                List<string> documents = 
+                    documentContext.Documents
+                    .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
+                    .Select(d => d.Contents)
+                    .ToList();
                 if (documents.Count > 0)
+                {
                     textBox.Text = documents[0];
+                    UpdateStatusLabel("File opened from DB.");
+                }
+                else
+                {
+                    UpdateStatusLabel("The database has no files to open.");
+                }
             }
         }
 
