@@ -49,6 +49,7 @@ namespace NotepadDB
             this.comboBox_Extension = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_Status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -80,27 +81,28 @@ namespace NotepadDB
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open file";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save as file";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // openFromDBToolStripMenuItem
             // 
             this.openFromDBToolStripMenuItem.Name = "openFromDBToolStripMenuItem";
-            this.openFromDBToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.openFromDBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openFromDBToolStripMenuItem.Text = "Open from DB";
             this.openFromDBToolStripMenuItem.Click += new System.EventHandler(this.openFromDBToolStripMenuItem_Click);
             // 
             // saveToDBToolStripMenuItem
             // 
             this.saveToDBToolStripMenuItem.Name = "saveToDBToolStripMenuItem";
-            this.saveToDBToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.saveToDBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToDBToolStripMenuItem.Text = "Save to DB";
             this.saveToDBToolStripMenuItem.Click += new System.EventHandler(this.saveToDBToolStripMenuItem_Click);
             // 
@@ -141,8 +143,8 @@ namespace NotepadDB
             // 
             // openFileDialog
             // 
-            this.openFileDialog.Filter = "XML Files (*.xml)|*.xml|JSON Files (*.json)|*.json";
-            this.openFileDialog.InitialDirectory = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\Common7";
+            this.openFileDialog.Filter = "XML Files (*.xml)|*.xml|JSON Files (*.json)|*.json|Text files (*.txt)|*.txt";
+            this.openFileDialog.InitialDirectory = Environment.CurrentDirectory;
             // 
             // tableLayoutPanel1
             // 
@@ -270,6 +272,7 @@ namespace NotepadDB
         private ComboBox comboBox_Extension;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel_Status;
+        private SaveFileDialog saveFileDialog;
     }
 }
 

@@ -177,5 +177,20 @@ namespace NotepadDB
         {
             currentFilename = textBox_FileName.Text;
         }
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog.Filter = "Text files (*.txt)|*.txt|XML Files (*.xml)|*.xml|JSON Files (*.json)|*.json";
+            saveFileDialog.InitialDirectory = Environment.CurrentDirectory;
+            saveFileDialog.FilterIndex = comboBox_Extension.SelectedIndex + 1;
+            saveFileDialog.FileName = currentFilename;
+            DialogResult dialogResult = saveFileDialog.ShowDialog();
+
+            if (dialogResult == DialogResult.OK)
+            {
+                File.WriteAllText(saveFileDialog.FileName, textBox.Text);
+                UpdateStatusLabel("File saved.");
+            }
+        }
     }
 }
