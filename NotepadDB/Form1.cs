@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Storage;
 using FastColoredTextBoxNS;
+using System.Text.RegularExpressions;
 
 namespace NotepadDB
 {
@@ -175,7 +176,13 @@ namespace NotepadDB
 
         private void TextBox_FileName_TextChanged(object sender, EventArgs e)
         {
-            currentFilename = textBox_FileName.Text;
+            if (Regex.Match(textBox_FileName.Text, @"(<|>|:|""|/|\\|\||\?|\*)?").Success)
+            {
+                textBox_FileName.Text = Regex.Replace(textBox_FileName.Text, @"(<|>|:|""|/|\\|\||\?|\*)", "");
+                textBox_FileName.SelectionStart = textBox_FileName.Text.Length;
+            }
+
+            currentFilename = textBox_FileName.Text.Trim();
         }
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
