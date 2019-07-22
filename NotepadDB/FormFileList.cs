@@ -29,7 +29,6 @@ namespace NotepadDB
 
                 listBox_Files.Items.AddRange(files.ToArray());
             }
-
         }
 
         private void Button_OK_Click(object sender, EventArgs e)

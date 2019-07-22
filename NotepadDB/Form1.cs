@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Storage;
+using FastColoredTextBoxNS;
 
 namespace NotepadDB
 {
@@ -21,6 +22,42 @@ namespace NotepadDB
         public Form_NotepadDB()
         {
             InitializeComponent();
+
+            comboBox_Extension.Items.AddRange(new string[] { ".txt", ".xml", ".json" } );
+            comboBox_Extension.SelectedIndex = 0;
+
+            UpdateStatusLabel("Open a file from a disk or a database.");
+        }
+
+        private void UpdateStatusLabel(string text)
+        {
+            toolStripStatusLabel_Status.Text = text;
+        }
+
+        private void UpdateFileNameInput()
+        {
+            textBox_FileName.Text = currentFilename;
+        }
+
+        private void UpdateExtension()
+        {
+            switch (currentExtension)
+            {
+                case ".xml":
+                    textBox.Language = FastColoredTextBoxNS.Language.XML;
+                    comboBox_Extension.SelectedIndex = 1;
+                    break;
+                case ".json":
+                    textBox.Language = FastColoredTextBoxNS.Language.JS;
+                    comboBox_Extension.SelectedIndex = 2;
+                    break;
+                case ".txt":
+                    textBox.Language = FastColoredTextBoxNS.Language.Custom;
+                    comboBox_Extension.SelectedIndex = 0;
+                    break;
+                default:
+                    return;
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -31,32 +68,16 @@ namespace NotepadDB
             {
                 currentFilename = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
                 currentExtension = Path.GetExtension(openFileDialog.FileName);
+                textBox_FileName.Text = currentFilename;
+
                 OpenFile(openFileDialog.FileName);
             }
-        }
 
-        private void OpenFile(string fileName)
-        {
-            UpdateHighlighting();
-
-            textBox.Text = File.ReadAllText(fileName);
-        }
-
-        private void UpdateHighlighting()
-        {
-            switch (currentExtension)
+            void OpenFile(string fileName)
             {
-                case ".xml":
-                    textBox.Language = FastColoredTextBoxNS.Language.XML;
-                    break;
-                case ".json":
-                    textBox.Language = FastColoredTextBoxNS.Language.JS;
-                    break;
-                case ".txt":
-                    textBox.Language = FastColoredTextBoxNS.Language.Custom;
-                    break;
-                default:
-                    return;
+                UpdateExtension();
+
+                textBox.Text = File.ReadAllText(fileName);
             }
         }
 
@@ -98,12 +119,48 @@ namespace NotepadDB
 
                 currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
                 currentExtension = Path.GetExtension(formFileList.SelectedFile);
-                UpdateHighlighting();
+                UpdateFileNameInput();
+                UpdateExtension();
 
                 var documents = documentContext.Documents.Where(d => d.Name == currentFilename && d.Extension == currentExtension).Select(d => d.Contents).ToList();
                 if (documents.Count > 0)
                     textBox.Text = documents[0];
             }
+        }
+
+        private void ComboBox_Extension_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox_Extension.SelectedIndex)
+            {
+                case 1:
+                    textBox.Language = FastColoredTextBoxNS.Language.XML;
+                    ChangeHighlighting(comboBox_Extension, textBox);
+                    break;
+                case 2:
+                    textBox.Language = FastColoredTextBoxNS.Language.JS;
+                    ChangeHighlighting(comboBox_Extension, textBox);
+                    break;
+                case 0:
+                    textBox.Language = FastColoredTextBoxNS.Language.Custom;
+                    ChangeHighlighting(comboBox_Extension, textBox);
+                    break;
+                default:
+                    return;
+            }
+
+            void ChangeHighlighting(ComboBox comboBox, FastColoredTextBox textBox)
+            {
+                currentExtension = comboBox.Text;
+
+                string text = textBox.Text;
+                textBox.Clear();
+                textBox.Text = text;
+            }
+        }
+
+        private void TextBox_FileName_TextChanged(object sender, EventArgs e)
+        {
+            currentFilename = textBox_FileName.Text;
         }
     }
 }
