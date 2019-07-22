@@ -37,6 +37,13 @@ namespace NotepadDB
 
         private void OpenFile(string fileName)
         {
+            UpdateHighlighting();
+
+            textBox.Text = File.ReadAllText(fileName);
+        }
+
+        private void UpdateHighlighting()
+        {
             switch (currentExtension)
             {
                 case ".xml":
@@ -51,9 +58,6 @@ namespace NotepadDB
                 default:
                     return;
             }
-
-            textBox.Clear();
-            textBox.Text = File.ReadAllText(fileName);
         }
 
         private void saveToDBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -87,7 +91,15 @@ namespace NotepadDB
         private void openFromDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (DocumentContext documentContext = new DocumentContext())
+            using (FormFileList formFileList = new FormFileList())
             {
+                if (formFileList.ShowDialog() == DialogResult.Cancel)
+                    return;
+
+                currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
+                currentExtension = Path.GetExtension(formFileList.SelectedFile);
+                UpdateHighlighting();
+
                 var documents = documentContext.Documents.Where(d => d.Name == currentFilename && d.Extension == currentExtension).Select(d => d.Contents).ToList();
                 if (documents.Count > 0)
                     textBox.Text = documents[0];
