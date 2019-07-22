@@ -61,6 +61,16 @@ namespace NotepadDB
             }
         }
 
+        private bool CheckIfFilenameInputEmpty()
+        {
+            if (String.IsNullOrWhiteSpace(currentFilename))
+            {
+                MessageBox.Show("Please enter a file name.", "Error");
+                return true;
+            }
+            return false;
+        }
+
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = openFileDialog.ShowDialog();
@@ -85,6 +95,9 @@ namespace NotepadDB
 
         private void saveToDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (CheckIfFilenameInputEmpty())
+                return;
+
             using (DocumentContext documentContext = new DocumentContext())
             {
                 if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
@@ -115,6 +128,9 @@ namespace NotepadDB
 
         private void openFromDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (CheckIfFilenameInputEmpty())
+                return;
+
             using (DocumentContext documentContext = new DocumentContext())
             using (FormFileList formFileList = new FormFileList())
             {
