@@ -47,7 +47,7 @@ namespace NotepadDB
             }
             catch
             {
-                MessageBox.Show("An error while populating the filelist occured.", "Error");
+                MessageBox.Show("An error while populating the file list occured.", "Error");
                 Close();
             }
         }

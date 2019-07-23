@@ -105,38 +105,36 @@ namespace NotepadDB
             if (CheckIfFilenameInputEmpty())
                 return;
 
+            UpdateStatusLabel("Saving the file to the database...");
             try
             {
                 await Task.Run(() =>
                 {
                     using (DocumentContext documentContext = new DocumentContext())
                     {
-                    if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
-                    {
-                        DialogResult dialogResult =
-                            MessageBox.Show(
-                                "The file with the same name has already been added to a database. Do you want to overwrite it?",
-                                "Record exists",
-                                MessageBoxButtons.YesNo);
+                        if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
+                        {
+                            DialogResult dialogResult =
+                                MessageBox.Show(
+                                    "The file with the same name has already been added to a database. \r\nDo you want to overwrite it?",
+                                    "Record exists",
+                                    MessageBoxButtons.YesNo);
 
-                        if (dialogResult == DialogResult.No)
-                            return;
-                    }
+                            if (dialogResult == DialogResult.No)
+                                return;
+                        }
 
-                    Document document = new Document()
-                    {
-                        Name = currentFilename,
-                        Extension = currentExtension,
-                        Contents = textBox.Text
-                    };
+                        Document document = new Document()
+                        {
+                            Name = currentFilename,
+                            Extension = currentExtension,
+                            Contents = textBox.Text
+                        };
 
-                    UpdateStatusLabel("Saving file to the database...");
+                        documentContext.Documents.AddOrUpdate(document);
+                        documentContext.SaveChanges();
 
-                    documentContext.Documents.AddOrUpdate(document);
-                    documentContext.SaveChanges();
-
-                    UpdateStatusLabel("File saved to the database.");
-                        
+                        UpdateStatusLabel("File saved to the database.");
                     }
                 });
             }
@@ -166,15 +164,15 @@ namespace NotepadDB
             }
             catch
             {
-                MessageBox.Show("Error opening the file from the database.", "Error");
-                UpdateStatusLabel("Error opening the file from the database.");
+                MessageBox.Show("Error retrieving the file list from the database.", "Error");
+                UpdateStatusLabel("Error retrieving the file list from the database.");
                 return;
             }
 
             UpdateFileNameInput();
             UpdateExtension();
 
-            UpdateStatusLabel("Opening file from the database...");
+            UpdateStatusLabel("Opening the file from the database...");
             List<string> documents = new List<string>();
 
             try
