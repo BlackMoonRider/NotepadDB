@@ -130,12 +130,12 @@ namespace NotepadDB
                         Contents = textBox.Text
                     };
 
-                    UpdateStatusLabel("Saving file to DB...");
+                    UpdateStatusLabel("Saving file to the database...");
 
                     documentContext.Documents.AddOrUpdate(document);
                     documentContext.SaveChanges();
 
-                    UpdateStatusLabel("File saved to DB.");
+                    UpdateStatusLabel("File saved to the database.");
                         
                     }
                 });
@@ -174,7 +174,7 @@ namespace NotepadDB
             UpdateFileNameInput();
             UpdateExtension();
 
-            UpdateStatusLabel("Opening file from DB...");
+            UpdateStatusLabel("Opening file from the database...");
             List<string> documents = new List<string>();
 
             try
@@ -203,7 +203,7 @@ namespace NotepadDB
             if (documents.Count > 0)
             {
                 textBox.Text = documents[0];
-                UpdateStatusLabel("File opened from DB.");
+                UpdateStatusLabel("File opened from the database.");
             }
             else
             {

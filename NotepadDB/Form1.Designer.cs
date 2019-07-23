@@ -144,7 +144,7 @@ namespace NotepadDB
             // openFileDialog
             // 
             this.openFileDialog.Filter = "XML Files (*.xml)|*.xml|JSON Files (*.json)|*.json|Text files (*.txt)|*.txt";
-            this.openFileDialog.InitialDirectory = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Common7\\IDE";
+            this.openFileDialog.InitialDirectory = Environment.CurrentDirectory;
             // 
             // tableLayoutPanel1
             // 
