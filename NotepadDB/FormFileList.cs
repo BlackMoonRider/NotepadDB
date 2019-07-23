@@ -18,23 +18,37 @@ namespace NotepadDB
         public FormFileList()
         {
             InitializeComponent();
-
-            PopulateListBoxAsync();
         }
 
-        private async void PopulateListBoxAsync()
+        public async void PopulateListBoxAsync()
         {
-            using (DocumentContext documentContext = new DocumentContext())
+            try
             {
-                List<string> files = new List<string>();
-
-                await Task.Run(() =>
+                using (DocumentContext documentContext = new DocumentContext())
                 {
-                    files = documentContext.Documents.Select(d => d.Name + d.Extension).ToList();
-                });
+                    List<string> files = new List<string>();
 
-                label_SelectFile.Text = "Select the file to open:";
-                listBox_Files.Items.AddRange(files.ToArray());
+                    await Task.Run(() =>
+                    {
+                        if (documentContext.Documents.Count() == 0)
+                        {
+                            MessageBox.Show("There are no files in the database. Please populate it before retrieving.", "Info");
+                            return;
+                        }
+
+                        files = documentContext.Documents.Select(d => d.Name + d.Extension).ToList();
+                    });
+
+                    button_OK.Enabled = true;
+                    listBox_Files.Items.AddRange(files.ToArray());
+                    listBox_Files.SelectedIndex = 0;
+                    label_SelectFile.Text = "Select the file to open:";
+                }
+            }
+            catch
+            {
+                MessageBox.Show("An error while populating the filelist occured.", "Error");
+                Close();
             }
         }
 

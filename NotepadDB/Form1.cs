@@ -81,15 +81,22 @@ namespace NotepadDB
                 currentExtension = Path.GetExtension(openFileDialog.FileName);
                 textBox_FileName.Text = currentFilename;
 
-                OpenFile(openFileDialog.FileName);
-                UpdateStatusLabel("File opened.");
+                try
+                {
+                    OpenFile(openFileDialog.FileName);
+                    UpdateStatusLabel("File opened.");
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to load the file.", "Error");
+                }
             }
 
             void OpenFile(string fileName)
             {
-                UpdateExtension();
-
                 textBox.Text = File.ReadAllText(fileName);
+
+                UpdateExtension();
             }
         }
 
@@ -98,10 +105,12 @@ namespace NotepadDB
             if (CheckIfFilenameInputEmpty())
                 return;
 
-            await Task.Run(() =>
+            try
             {
-                using (DocumentContext documentContext = new DocumentContext())
+                await Task.Run(() =>
                 {
+                    using (DocumentContext documentContext = new DocumentContext())
+                    {
                     if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
                     {
                         DialogResult dialogResult =
@@ -127,23 +136,40 @@ namespace NotepadDB
                     documentContext.SaveChanges();
 
                     UpdateStatusLabel("File saved to DB.");
-                }
-            });
+                        
+                    }
+                });
+            }
+            catch
+            {
+                MessageBox.Show("Failed to save to the database.", "Error");
+                UpdateStatusLabel("Failed to save to the database.");
+            }
         }
 
         private async void openFromDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            await Task.Run(() =>
+            try
             {
-                using (FormFileList formFileList = new FormFileList())
+                await Task.Run(() =>
                 {
-                    if (formFileList.ShowDialog() == DialogResult.Cancel)
-                        return;
+                    using (FormFileList formFileList = new FormFileList())
+                    {
+                        formFileList.PopulateListBoxAsync();
+                        if (formFileList.ShowDialog() == DialogResult.Cancel)
+                            return;
 
-                    currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
-                    currentExtension = Path.GetExtension(formFileList.SelectedFile);
-                }
-            });
+                        currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
+                        currentExtension = Path.GetExtension(formFileList.SelectedFile);
+                    }
+                });
+            }
+            catch
+            {
+                MessageBox.Show("Error opening the file from the database.", "Error");
+                UpdateStatusLabel("Error opening the file from the database.");
+                return;
+            }
 
             UpdateFileNameInput();
             UpdateExtension();
@@ -151,17 +177,28 @@ namespace NotepadDB
             UpdateStatusLabel("Opening file from DB...");
             List<string> documents = new List<string>();
 
-            await Task.Run(() =>
+            try
             {
-                using (DocumentContext documentContext = new DocumentContext())
+                await Task.Run(() =>
                 {
-                    documents =
-                        documentContext.Documents
-                        .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
-                        .Select(d => d.Contents)
-                        .ToList();
-                }
-            });
+                    using (DocumentContext documentContext = new DocumentContext())
+                    {
+                        documents =
+                            documentContext.Documents
+                            .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
+                            .Select(d => d.Contents)
+                            .ToList();
+                    }
+                });
+            }
+            catch
+            {
+                MessageBox.Show("Error opening the file from the database.", "Error");
+                UpdateStatusLabel("Error opening the file from the database.");
+                currentFilename = String.Empty;
+                UpdateFileNameInput();
+                return;
+            }
 
             if (documents.Count > 0)
             {
@@ -172,34 +209,6 @@ namespace NotepadDB
             {
                 UpdateStatusLabel("The database has no files to open.");
             }
-
-            //using (DocumentContext documentContext = new DocumentContext())
-            //using (FormFileList formFileList = new FormFileList())
-            //{
-            //    if (formFileList.ShowDialog() == DialogResult.Cancel)
-            //        return;
-
-            //    currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
-            //    currentExtension = Path.GetExtension(formFileList.SelectedFile);
-            //    UpdateFileNameInput();
-            //    UpdateExtension();
-
-            //    UpdateStatusLabel("Opening file from DB...");
-            //    List<string> documents =
-            //        documentContext.Documents
-            //        .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
-            //        .Select(d => d.Contents)
-            //        .ToList();
-            //    if (documents.Count > 0)
-            //    {
-            //        textBox.Text = documents[0];
-            //        UpdateStatusLabel("File opened from DB.");
-            //    }
-            //    else
-            //    {
-            //        UpdateStatusLabel("The database has no files to open.");
-            //    }
-            //}
         }
 
         private void ComboBox_Extension_SelectedIndexChanged(object sender, EventArgs e)
@@ -253,8 +262,16 @@ namespace NotepadDB
 
             if (dialogResult == DialogResult.OK)
             {
-                File.WriteAllText(saveFileDialog.FileName, textBox.Text);
-                UpdateStatusLabel("File saved.");
+                try
+                {
+                    File.WriteAllText(saveFileDialog.FileName, textBox.Text);
+                    UpdateStatusLabel("File saved.");
+                }
+                catch
+                {
+                    MessageBox.Show("Error saving the file.", "Error");
+                    UpdateStatusLabel("Error saving the file.");
+                }
             }
         }
     }

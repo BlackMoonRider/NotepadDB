@@ -81,28 +81,28 @@ namespace NotepadDB
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open file";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save as file";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // openFromDBToolStripMenuItem
             // 
             this.openFromDBToolStripMenuItem.Name = "openFromDBToolStripMenuItem";
-            this.openFromDBToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.openFromDBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openFromDBToolStripMenuItem.Text = "Open from DB";
             this.openFromDBToolStripMenuItem.Click += new System.EventHandler(this.openFromDBToolStripMenuItem_Click);
             // 
             // saveToDBToolStripMenuItem
             // 
             this.saveToDBToolStripMenuItem.Name = "saveToDBToolStripMenuItem";
-            this.saveToDBToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.saveToDBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToDBToolStripMenuItem.Text = "Save to DB";
             this.saveToDBToolStripMenuItem.Click += new System.EventHandler(this.saveToDBToolStripMenuItem_Click);
             // 

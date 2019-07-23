@@ -53,6 +53,7 @@
             // 
             // button_OK
             // 
+            this.button_OK.Enabled = false;
             this.button_OK.Location = new System.Drawing.Point(247, 399);
             this.button_OK.Name = "button_OK";
             this.button_OK.Size = new System.Drawing.Size(75, 23);
