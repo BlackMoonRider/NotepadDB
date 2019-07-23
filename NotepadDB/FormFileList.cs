@@ -19,14 +19,21 @@ namespace NotepadDB
         {
             InitializeComponent();
 
+            PopulateListBoxAsync();
+        }
+
+        private async void PopulateListBoxAsync()
+        {
             using (DocumentContext documentContext = new DocumentContext())
             {
                 List<string> files = new List<string>();
-                foreach (Document document in documentContext.Documents)
-                {
-                    files.Add(document.Name + document.Extension);
-                }
 
+                await Task.Run(() =>
+                {
+                    files = documentContext.Documents.Select(d => d.Name + d.Extension).ToList();
+                });
+
+                label_SelectFile.Text = "Select the file to open:";
                 listBox_Files.Items.AddRange(files.ToArray());
             }
         }

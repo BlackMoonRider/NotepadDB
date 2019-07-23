@@ -39,9 +39,9 @@
             this.label_SelectFile.AutoSize = true;
             this.label_SelectFile.Location = new System.Drawing.Point(13, 13);
             this.label_SelectFile.Name = "label_SelectFile";
-            this.label_SelectFile.Size = new System.Drawing.Size(113, 13);
+            this.label_SelectFile.Size = new System.Drawing.Size(174, 13);
             this.label_SelectFile.TabIndex = 0;
-            this.label_SelectFile.Text = "Select the file to open:";
+            this.label_SelectFile.Text = "Please wait for the list to populate...";
             // 
             // listBox_Files
             // 

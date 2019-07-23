@@ -93,71 +93,113 @@ namespace NotepadDB
             }
         }
 
-        private void saveToDBToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveToDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CheckIfFilenameInputEmpty())
                 return;
 
-            using (DocumentContext documentContext = new DocumentContext())
+            await Task.Run(() =>
             {
-                if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
+                using (DocumentContext documentContext = new DocumentContext())
                 {
-                    DialogResult dialogResult =
-                        MessageBox.Show(
-                            "The file with the same name has already been added to a database. Do you want to overwrite it?",
-                            "Record exists",
-                            MessageBoxButtons.YesNo);
+                    if (documentContext.Documents.Any(d => d.Name == currentFilename && d.Extension == currentExtension))
+                    {
+                        DialogResult dialogResult =
+                            MessageBox.Show(
+                                "The file with the same name has already been added to a database. Do you want to overwrite it?",
+                                "Record exists",
+                                MessageBoxButtons.YesNo);
 
-                    if (dialogResult == DialogResult.No)
-                        return;
+                        if (dialogResult == DialogResult.No)
+                            return;
+                    }
+
+                    Document document = new Document()
+                    {
+                        Name = currentFilename,
+                        Extension = currentExtension,
+                        Contents = textBox.Text
+                    };
+
+                    UpdateStatusLabel("Saving file to DB...");
+
+                    documentContext.Documents.AddOrUpdate(document);
+                    documentContext.SaveChanges();
+
+                    UpdateStatusLabel("File saved to DB.");
                 }
-
-                Document document = new Document()
-                {
-                    Name = currentFilename,
-                    Extension = currentExtension,
-                    Contents = textBox.Text
-                };
-
-                UpdateStatusLabel("Saving file to DB...");
-                documentContext.Documents.AddOrUpdate(document);
-                documentContext.SaveChanges();
-                UpdateStatusLabel("File saved to DB.");
-            }
+            });
         }
 
-        private void openFromDBToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void openFromDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (CheckIfFilenameInputEmpty())
-                return;
-
-            using (DocumentContext documentContext = new DocumentContext())
-            using (FormFileList formFileList = new FormFileList())
+            await Task.Run(() =>
             {
-                if (formFileList.ShowDialog() == DialogResult.Cancel)
-                    return;
-
-                currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
-                currentExtension = Path.GetExtension(formFileList.SelectedFile);
-                UpdateFileNameInput();
-                UpdateExtension();
-
-                UpdateStatusLabel("Opening file from DB...");
-                List<string> documents = 
-                    documentContext.Documents
-                    .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
-                    .Select(d => d.Contents)
-                    .ToList();
-                if (documents.Count > 0)
+                using (FormFileList formFileList = new FormFileList())
                 {
-                    textBox.Text = documents[0];
-                    UpdateStatusLabel("File opened from DB.");
+                    if (formFileList.ShowDialog() == DialogResult.Cancel)
+                        return;
+
+                    currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
+                    currentExtension = Path.GetExtension(formFileList.SelectedFile);
                 }
-                else
+            });
+
+            UpdateFileNameInput();
+            UpdateExtension();
+
+            UpdateStatusLabel("Opening file from DB...");
+            List<string> documents = new List<string>();
+
+            await Task.Run(() =>
+            {
+                using (DocumentContext documentContext = new DocumentContext())
                 {
-                    UpdateStatusLabel("The database has no files to open.");
+                    documents =
+                        documentContext.Documents
+                        .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
+                        .Select(d => d.Contents)
+                        .ToList();
                 }
+            });
+
+            if (documents.Count > 0)
+            {
+                textBox.Text = documents[0];
+                UpdateStatusLabel("File opened from DB.");
             }
+            else
+            {
+                UpdateStatusLabel("The database has no files to open.");
+            }
+
+            //using (DocumentContext documentContext = new DocumentContext())
+            //using (FormFileList formFileList = new FormFileList())
+            //{
+            //    if (formFileList.ShowDialog() == DialogResult.Cancel)
+            //        return;
+
+            //    currentFilename = Path.GetFileNameWithoutExtension(formFileList.SelectedFile);
+            //    currentExtension = Path.GetExtension(formFileList.SelectedFile);
+            //    UpdateFileNameInput();
+            //    UpdateExtension();
+
+            //    UpdateStatusLabel("Opening file from DB...");
+            //    List<string> documents =
+            //        documentContext.Documents
+            //        .Where(d => d.Name == currentFilename && d.Extension == currentExtension)
+            //        .Select(d => d.Contents)
+            //        .ToList();
+            //    if (documents.Count > 0)
+            //    {
+            //        textBox.Text = documents[0];
+            //        UpdateStatusLabel("File opened from DB.");
+            //    }
+            //    else
+            //    {
+            //        UpdateStatusLabel("The database has no files to open.");
+            //    }
+            //}
         }
 
         private void ComboBox_Extension_SelectedIndexChanged(object sender, EventArgs e)
